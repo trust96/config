@@ -12,6 +12,9 @@ config.keys = {
 		mods = "ALT",
 		action = action.SpawnCommandInNewTab({}),
 	},
+	{ key = "UpArrow", mods = "CTRL|SHIFT", action = action.ScrollByLine(-1) },
+	{ key = "DownArrow", mods = "CTRL|SHIFT", action = action.ScrollByLine(1) },
+
 }
 -- and finally, return the configuration to wezterm
 return config
