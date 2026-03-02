@@ -5,7 +5,7 @@
   - [ ] merge strategy
 - [ ] neovim / lazyvim
 
-## Linux + Windows config plan
+## Linux and Windows config plan
 
 - [ ] Split shared config from OS-specific overrides (shared git and nvim settings, shell/terminal per OS)
 - [ ] Add a `windows/` directory for PowerShell profile and Windows-specific setup notes
