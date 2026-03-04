@@ -1,5 +1,10 @@
 #!/usr/bin/env pwsh
 #Requires -Version 7.0
+
+param(
+  [string]$WorkRoot = ""
+)
+
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
@@ -7,7 +12,7 @@ $ScriptDir = $PSScriptRoot
 
 # Mapping: repo_file -> target_path (Windows)
 $FileMap = @{
-  "gitconfig"        = Join-Path $HOME ".gitconfig"
+  "gitconfig.work"   = Join-Path $HOME ".gitconfig.work"
   "wezterm.lua"      = Join-Path $HOME ".config" "wezterm" "wezterm.lua"
   "nvim"             = Join-Path $env:LOCALAPPDATA "nvim"
   "pwsh_profile.ps1" = $PROFILE.CurrentUserAllHosts
@@ -57,6 +62,34 @@ function Link-File {
 
 Write-Host "Installing dotfiles from $ScriptDir"
 Write-Host "---"
+
+# Generate gitconfig from template
+$templatePath = Join-Path $ScriptDir "gitconfig.template"
+$gitconfigDest = Join-Path $HOME ".gitconfig"
+$gitconfigBackup = "${gitconfigDest}.bak"
+
+if (Test-Path $gitconfigBackup) {
+  Write-Host "remove existing backup: $gitconfigBackup"
+  Remove-Item -Recurse -Force $gitconfigBackup
+}
+if (Test-Path $gitconfigDest) {
+  Write-Host "backup: $gitconfigDest -> $gitconfigBackup"
+  Move-Item -Path $gitconfigDest -Destination $gitconfigBackup
+}
+
+$templateContent = Get-Content -Raw $templatePath
+if ($WorkRoot -ne "") {
+  # Convert backslashes to forward slashes for Git
+  $gitWorkRoot = $WorkRoot -replace '\\', '/'
+  $templateContent = $templateContent -replace '__WORK_ROOT__', $gitWorkRoot
+  Set-Content -Path $gitconfigDest -Value $templateContent -NoNewline
+  Write-Host "generate: $gitconfigDest (work-root: $gitWorkRoot)"
+} else {
+  # Strip the includeIf block when no work root is provided
+  $templateContent = $templateContent -replace '(?m)\[includeIf "gitdir:__WORK_ROOT__/"\]\r?\n\tpath = ~/\.gitconfig\.work\r?\n', ''
+  Set-Content -Path $gitconfigDest -Value $templateContent -NoNewline
+  Write-Host "generate: $gitconfigDest (personal only)"
+}
 
 foreach ($file in $FileMap.Keys) {
   $src = Join-Path $ScriptDir $file
