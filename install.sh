@@ -22,7 +22,7 @@ done
 declare -A FILE_MAP=(
   ["bashrc"]="$HOME/.bashrc"
   ["bashrc_profile"]="$HOME/.bash_profile"
-  ["gitconfig.work"]="$HOME/.gitconfig"
+  ["gitconfig.work"]="$HOME/.gitconfig.work"
   ["wezterm.lua"]="$HOME/.wezterm.lua"
   ["nvim"]="$HOME/.config/nvim"
 )
