@@ -7,14 +7,14 @@ WORK_ROOT=""
 # Parse arguments
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    --work-root)
-      WORK_ROOT="$2"
-      shift 2
-      ;;
-    *)
-      echo "Unknown option: $1"
-      exit 1
-      ;;
+  --work-root)
+    WORK_ROOT="$2"
+    shift 2
+    ;;
+  *)
+    echo "Unknown option: $1"
+    exit 1
+    ;;
   esac
 done
 
@@ -22,8 +22,8 @@ done
 declare -A FILE_MAP=(
   ["bashrc"]="$HOME/.bashrc"
   ["bashrc_profile"]="$HOME/.bash_profile"
-  ["gitconfig.work"]="$HOME/.gitconfig.work"
-  ["wezterm.lua"]="$HOME/.config/wezterm/wezterm.lua"
+  ["gitconfig.work"]="$HOME/.gitconfig"
+  ["wezterm.lua"]="$HOME/.wezterm.lua"
   ["nvim"]="$HOME/.config/nvim"
 )
 
@@ -75,11 +75,11 @@ install_gitconfig() {
 
   if [ -n "$WORK_ROOT" ]; then
     # Substitute the work root path into the template
-    sed "s|__WORK_ROOT__|$WORK_ROOT|g" "$src" > "$dest"
+    sed "s|__WORK_ROOT__|$WORK_ROOT|g" "$src" >"$dest"
     echo "generate: $dest (work-root: $WORK_ROOT)"
   else
     # Strip the includeIf block when no work root is provided
-    sed '/\[includeIf "gitdir:__WORK_ROOT__\/"\]/,/^\[/{ /^\[includeIf/d; /path = /d; }' "$src" > "$dest"
+    sed '/\[includeIf "gitdir:__WORK_ROOT__\/"\]/,/^\[/{ /^\[includeIf/d; /path = /d; }' "$src" >"$dest"
     echo "generate: $dest (personal only)"
   fi
 }
